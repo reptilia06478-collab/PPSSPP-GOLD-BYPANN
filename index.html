@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>PANN STATION — PSP Emulator</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</head>
+<body>
+
+<!-- ═══ SPLASH (video kamu main di sini) ═══ -->
+<div class="splash" id="splash">
+  <video class="splash-video" id="splash-video" autoplay muted playsinline loop>
+    <source src="assets/bg-video.mp4" type="video/mp4">
+  </video>
+  <div class="splash-overlay"></div>
+  <div class="splash-content">
+    <div class="splash-logo">PPSSPP</div>
+    <div class="splash-sub">PANN STATION</div>
+    <div class="splash-loading">
+      <div class="splash-bar"><div class="splash-bar-fill" id="splash-bar"></div></div>
+      <div class="splash-text" id="splash-text">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div class="app" id="app">
+
+  <!-- TOP TABS -->
+  <header class="topbar">
+    <button class="topbar-back" id="btn-back" hidden>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="topbar-tabs">
+      <button class="topbar-tab active" data-tab="recent">Recent</button>
+      <button class="topbar-tab" data-tab="games">Games</button>
+      <button class="topbar-tab" data-tab="homebrew">Homebrew &amp; Demos</button>
+    </div>
+  </header>
+
+  <!-- MAIN: LIBRARY (kiri) + RIGHT PANEL (kanan) -->
+  <main class="main">
+    <!-- LIBRARY -->
+    <section class="library" id="library">
+      <div class="lib-panel active" data-panel="recent">
+        <div class="lib-grid" id="grid-recent">
+          <div class="lib-empty">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="#3a4a5e"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <p>Belum ada game recent</p>
+          </div>
+        </div>
+      </div>
+      <div class="lib-panel" data-panel="games">
+        <div class="lib-grid" id="grid-games"></div>
+      </div>
+      <div class="lib-panel" data-panel="homebrew">
+        <div class="lib-grid" id="grid-homebrew"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <aside class="right-panel">
+      <div class="rp-brand">
+        <img src="assets/logo-ppsspp.png" alt="PPSSPP" class="rp-logo" onerror="this.style.display='none'">
+        <div class="rp-name">PPSSPP</div>
+        <div class="rp-version">v1.4 · PANN STATION</div>
+      </div>
+
+      <nav class="rp-menu">
+        <button class="rp-item" data-action="load">Load...</button>
+        <button class="rp-item" data-action="settings">Settings</button>
+        <button class="rp-item" data-action="credits">Credits</button>
+        <a class="rp-item" href="https://www.ppsspp.org/" target="_blank" rel="noopener">www.ppsspp.org</a>
+        <a class="rp-item" href="https://www.ppsspp.org/donate.html" target="_blank" rel="noopener">Support PPSSPP</a>
+        <button class="rp-item rp-exit" data-action="exit">Exit</button>
+      </nav>
+    </aside>
+  </main>
+
+  <!-- FAB ADD -->
+  <button class="fab" id="fab-add">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+  </button>
+</div>
+
+<!-- ═══ EMULATOR ═══ -->
+<section class="emu-screen" id="screen-emulator">
+  <div class="emu-wrap">
+    <div id="emu-view"></div>
+  </div>
+  <div class="emu-overlay" id="emu-overlay">
+    <button class="emu-btn" id="emu-exit">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="emu-title" id="emu-title">-</div>
+    <div class="emu-actions">
+      <button class="emu-btn" id="emu-save">Save</button>
+      <button class="emu-btn" id="emu-load">Load</button>
+      <button class="emu-btn" id="emu-pause">Pause</button>
+      <button class="emu-btn" id="emu-full">Full</button>
+    </div>
+  </div>
+  <div class="fps-badge" id="fps-badge"><span id="fps-val">60</span> FPS</div>
+
+  <div class="touch" id="touch">
+    <div class="touch-left">
+      <div class="dpad">
+        <button class="dbtn du" data-key="up">▲</button>
+        <button class="dbtn dl" data-key="left">◀</button>
+        <button class="dbtn dr" data-key="right">▶</button>
+        <button class="dbtn dd" data-key="down">▼</button>
+      </div>
+      <div class="analog"><div class="analog-base"><div class="analog-stick" id="analog-stick"></div></div></div>
+    </div>
+    <div class="touch-right">
+      <div class="face">
+        <button class="fbtn ft" data-key="triangle">△</button>
+        <button class="fbtn fc" data-key="circle">○</button>
+        <button class="fbtn fx" data-key="cross">✕</button>
+        <button class="fbtn fs" data-key="square">□</button>
+      </div>
+      <div class="shoulder">
+        <button class="sbtn" data-key="l">L</button>
+        <button class="sbtn" data-key="r">R</button>
+      </div>
+      <div class="system">
+        <button class="sysbtn" data-key="select">SEL</button>
+        <button class="sysbtn" data-key="start">STA</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MODAL SETTINGS ═══ -->
+<div class="modal" id="modal-settings">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span>Settings</span>
+      <button class="modal-close" id="btn-close-settings">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Resolution Scale</label>
+        <select id="set-res"><option value="1">1x Native</option><option value="2" selected>2x HD</option><option value="3">3x Full HD</option><option value="4">4x 4K</option></select>
+      </div>
+      <div class="form-group">
+        <label>Frame Skip</label>
+        <select id="set-frameskip"><option value="0">0 Off</option><option value="2" selected>2 Balanced</option><option value="4">4 Max</option></select>
+      </div>
+      <div class="form-group switch-row"><label>Touch Controls</label><input type="checkbox" id="set-touch" checked></div>
+      <div class="form-group switch-row"><label>Show FPS</label><input type="checkbox" id="set-fps" checked></div>
+      <div class="form-group switch-row"><label>Enable Music</label><input type="checkbox" id="set-music" checked></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-primary btn-full" id="btn-save-settings">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL CREDITS ═══ -->
+<div class="modal" id="modal-credits">
+  <div class="modal-box">
+    <div class="modal-head"><span>Credits</span><button class="modal-close" id="btn-close-credits">✕</button></div>
+    <div class="modal-body">
+      <div class="credits-list">
+        <div class="credit-row"><span class="credit-label">Developer</span><span class="credit-value">PANN</span></div>
+        <div class="credit-row"><span class="credit-label">Core Emulator</span><span class="credit-value">PPSSPP (Henrik Rydgård)</span></div>
+        <div class="credit-row"><span class="credit-label">Frontend</span><span class="credit-value">EmulatorJS</span></div>
+        <div class="credit-row"><span class="credit-label">License</span><span class="credit-value">GPL v2+</span></div>
+      </div>
+      <p class="credits-note">PANN STATION tidak menyediakan ROM game. Semua game di-upload oleh user.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL ADD ═══ -->
+<div class="modal" id="modal-add">
+  <div class="modal-box">
+    <div class="modal-head"><span>Tambah Game</span><button class="modal-close" id="btn-close-add">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Upload File (ISO/CSO/PBP)</label><input type="file" id="add-file" accept=".iso,.cso,.pbp,.chd"></div>
+      <div class="form-divider">atau</div>
+      <div class="form-group"><label>Nama Game</label><input type="text" id="add-name" placeholder="Monster Hunter"></div>
+      <div class="form-group"><label>URL ISO/CSO</label><input type="text" id="add-url" placeholder="https://..."></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-secondary" id="btn-cancel-add">Batal</button>
+      <button class="btn-primary" id="btn-save-add">Tambah</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL LOAD ═══ -->
+<div class="modal" id="modal-load">
+  <div class="modal-box">
+    <div class="modal-head"><span>Load Game</span><button class="modal-close" id="btn-close-load">✕</button></div>
+    <div class="modal-body"><div class="load-list" id="load-list"><div class="empty-mini">Belum ada game.</div></div></div>
+  </div>
+</div>
+
+<!-- MUSIC -->
+<audio id="bg-music" loop preload="auto"><source src="assets/bg-music.mp3" type="audio/mpeg"></audio>
+
+<script src="app.js"></script>
+</body>
+</html>
